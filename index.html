@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskFlow — Get Things Done</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+<link rel="shortcut icon" href="https://icons.veryicon.com/png/o/miscellaneous/ramen-iconset-linear-icon-set/task-18.png" type="image/x-icon">
+</head>
+<body>
+
+<div id="sidebar-overlay" class="sidebar-overlay z-50" onclick="toggleSidebar()"></div>
+<!-- SIDEBAR OVERLAY -->
+<div class="flex min-h-screen">
+  <!-- MOBILE HEADER -->
+  <div class="mobile-header fixed top-0 left-0 right-0 bg-white border-b border-gray-100 px-4 py-3 items-center justify-between z-30" style="box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center transition-colors" id="hamburger-btn">
+      <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #3b6cf7, #2a56e0);">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <span class="text-lg font-bold text-gray-900" style="font-family:'Syne',sans-serif;">TaskFlow</span>
+    </div>
+    <div class="w-10"></div>
+  </div>
+ 
+  <!-- DESKTOP SIDEBAR -->
+  <aside id="sidebar" class="desktop-sidebar w-64 bg-white border-r border-gray-100 fixed h-full flex flex-col z-99999 shadow-sm" style="box-shadow: 4px 0 24px rgba(0,0,0,0.04);">
+    <!-- Logo -->
+    <div class="px-6 py-7 border-b border-gray-50">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #3b6cf7, #2a56e0);">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <span class="text-xl font-bold text-gray-900" style="font-family:'Syne',sans-serif;">TaskFlow</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-5 space-y-1">
+      <a onclick="navigate('home'); closeSidebarMobile();" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold cursor-pointer" data-page="home">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Home
+      </a>
+      <a onclick="navigate('tasks'); closeSidebarMobile();" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold cursor-pointer text-gray-500" data-page="tasks">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        My Tasks
+      </a>
+      <a onclick="navigate('settings'); closeSidebarMobile();" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold cursor-pointer text-gray-500" data-page="settings">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <!-- User -->
+    <div class="px-4 py-4 border-t border-gray-50">
+      <div class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background: linear-gradient(135deg,#3b6cf7,#2a56e0);">T</div>
+        <div>
+          <div class="text-sm font-semibold text-gray-800">TaskFlow User</div>
+          <div class="text-xs text-gray-400">Pro Plan</div>
+        </div>
+      </div>
+    </div>
+
+    
+</aside>
+
+<!-- MAIN -->
+  <main class="flex-1 ml-0 md:ml-64 min-h-screen main-content">
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <!-- Header -->
+      <div class="header-gradient px-6 md:px-10 pt-8 pb-12 md:pt-10 md:pb-16">
+        <div class="max-w-5xl mx-auto flex items-center gap-4">
+          <div class="w-14 h-14 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center text-3xl">👋</div>
+          <div>
+            <h1 class="text-white text-2xl md:text-3xl font-bold" style="font-family:'Syne',sans-serif;">Good Morning!</h1>
+            <p class="text-blue-100 text-sm md:text-base mt-0.5">Let's get things done today.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 md:px-10 -mt-6 pb-10 max-w-5xl mx-auto">
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 fade-up">
+          <div class="stat-card stat-card-green bg-white rounded-2xl p-5 shadow-sm col-span-1">
+            <div class="text-3xl font-bold text-green-500" id="home-completed">0</div>
+            <div class="text-sm font-medium text-gray-500 mt-1">Completed</div>
+          </div>
+          <div class="stat-card stat-card-blue bg-white rounded-2xl p-5 shadow-sm col-span-1">
+            <div class="text-3xl font-bold" style="color:var(--blue)" id="home-remaining">0</div>
+            <div class="text-sm font-medium text-gray-500 mt-1">Remaining</div>
+          </div>
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm col-span-1">
+            <div class="text-3xl font-bold text-red-500" id="home-high">0</div>
+            <div class="text-sm font-medium text-gray-500 mt-1">High Priority</div>
+          </div>
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm col-span-1">
+            <div class="text-3xl font-bold text-orange-400" id="home-total">0</div>
+            <div class="text-sm font-medium text-gray-500 mt-1">Total Tasks</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Priority Focus -->
+          <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm overflow-hidden fade-up-1">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-gray-50">
+              <h2 class="text-lg font-bold text-gray-800">Priority Focus</h2>
+              <span class="chip" style="background:#eff4ff;color:var(--blue)" id="top-badge">Top 3</span>
+            </div>
+            <div id="priority-list" class="divide-y divide-gray-50 px-2 py-2"></div>
+            <div id="no-priority" class="hidden flex flex-col items-center justify-center py-12 text-center">
+              <div class="text-4xl mb-3">🎉</div>
+              <p class="text-gray-400 font-medium">All caught up! No pending tasks.</p>
+            </div>
+          </div>
+
+          <!-- Quick Summary -->
+          <div class="space-y-4 fade-up-2">
+            <!-- Progress Ring card -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+              <h3 class="text-base font-bold text-gray-800 mb-4">Today's Progress</h3>
+              <div class="relative w-32 h-32 mx-auto mb-4">
+                <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#f2f4f7" stroke-width="10"/>
+                  <circle id="progress-ring" cx="50" cy="50" r="40" fill="none" stroke="#3b6cf7" stroke-width="10"
+                    stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"
+                    style="transition: stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1)"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-2xl font-bold text-gray-800" id="ring-pct">0%</span>
+                  <span class="text-xs text-gray-400">done</span>
+                </div>
+              </div>
+              <div class="flex justify-around text-center">
+                <div>
+                  <div class="text-lg font-bold text-gray-800" id="ring-done">0</div>
+                  <div class="text-xs text-gray-400">Done</div>
+                </div>
+                <div class="w-px bg-gray-100"></div>
+                <div>
+                  <div class="text-lg font-bold text-gray-800" id="ring-left">0</div>
+                  <div class="text-xs text-gray-400">Left</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Add -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-white">
+              <h3 class="font-bold text-base mb-1">Quick Add Task</h3>
+              <p class="text-blue-100 text-xs mb-4">Stay on top of your workload</p>
+              <button onclick="navigate('tasks'); setTimeout(openModal,200)" class="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white font-semibold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                Add New Task
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS PAGE -->
+    <div id="page-tasks" class="page">
+      <!-- Header -->
+      <div class="header-gradient px-6 md:px-10 pt-8 pb-12 md:pt-10 md:pb-16">
+        <div class="max-w-5xl mx-auto">
+          <h1 class="text-white text-2xl md:text-3xl font-bold mb-4">My Tasks</h1>
+          <!-- Progress Bar -->
+          <div class="bg-white/20 backdrop-blur rounded-2xl px-5 py-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-blue-100 text-sm font-medium">Progress</span>
+              <span class="text-white text-sm font-bold" id="task-progress-text">0 / 0</span>
+            </div>
+            <div class="bg-white/30 rounded-full h-2.5 overflow-hidden">
+              <div id="task-progress-bar" class="progress-fill bg-white rounded-full h-2.5" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 md:px-10 -mt-6 pb-10 max-w-5xl mx-auto">
+        <!-- Filter + Add -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-5 fade-up">
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="setFilter('all')" class="filter-btn chip cursor-pointer" style="background:#eff4ff;color:var(--blue)" data-filter="all">All</button>
+            <button onclick="setFilter('high')" class="filter-btn chip cursor-pointer bg-red-50 text-red-500" data-filter="high">🔴 High</button>
+            <button onclick="setFilter('medium')" class="filter-btn chip cursor-pointer bg-orange-50 text-orange-500" data-filter="medium">🟠 Medium</button>
+            <button onclick="setFilter('low')" class="filter-btn chip cursor-pointer bg-blue-50 text-blue-500" data-filter="low">🔵 Low</button>
+          </div>
+          <button onclick="openModal()" class="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 hover:opacity-90 flex-shrink-0" style="background:linear-gradient(135deg,#3b6cf7,#2a56e0); box-shadow:0 4px 14px rgba(59,108,247,0.35)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Add Task
+          </button>
+        </div>
+
+        <!-- Task Sections -->
+        <div id="task-sections" class="space-y-6 fade-up-1"></div>
+
+        <!-- Empty state -->
+        <div id="task-empty" class="hidden empty-state bg-white rounded-2xl p-12 text-center shadow-sm">
+          <div class="text-5xl mb-4">📋</div>
+          <h3 class="text-lg font-bold text-gray-700 mb-2">No tasks found</h3>
+          <p class="text-gray-400 text-sm mb-5">Create your first task to get started</p>
+          <button onclick="openModal()" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:var(--blue)">Add Your First Task</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div id="page-settings" class="page">
+      <!-- Header -->
+      <div class="header-gradient px-6 md:px-10 pt-8 pb-12 md:pt-10 md:pb-16">
+        <div class="max-w-5xl mx-auto">
+          <h1 class="text-white text-2xl md:text-3xl font-bold">Notification Settings</h1>
+          <p class="text-blue-100 text-sm mt-1">Customize how TaskFlow notifies you</p>
+        </div>
+      </div>
+
+      <div class="px-6 md:px-10 -mt-6 pb-10 max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Low Priority -->
+          <div class="bg-white rounded-2xl shadow-sm p-6 fade-up">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background:#eff4ff;">
+                <svg class="w-6 h-6" style="color:var(--blue)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              </div>
+              <div>
+                <div class="font-bold text-gray-800">Low Priority</div>
+                <div class="text-gray-400 text-xs mt-0.5">Gentle reminders for regular tasks</div>
+              </div>
+            </div>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm font-semibold text-gray-700 block mb-2">Notification Sound</label>
+                <select class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 cursor-pointer" style="--tw-ring-color:#3b6cf7;">
+                  <option>🎵 Relaxed Melody</option>
+                  <option>🔔 Gentle Chime</option>
+                  <option>🎶 Soft Tone</option>
+                  <option>🎹 Piano Note</option>
+                </select>
+              </div>
+              <div class="flex items-center justify-between py-2">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Vibration</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Subtle haptic feedback</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-semibold text-gray-700">Volume</span>
+                  <span class="text-sm font-semibold" style="color:var(--blue)" id="vol-low-val">50%</span>
+                </div>
+                <input type="range" min="0" max="100" value="50" class="w-full h-2 rounded-full" oninput="document.getElementById('vol-low-val').textContent=this.value+'%'">
+              </div>
+              <div class="flex items-center justify-between py-2">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Push Notifications</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Receive browser notifications</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Critical -->
+          <div class="bg-white rounded-2xl shadow-sm p-6 fade-up-1 border border-red-50">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              </div>
+              <div>
+                <div class="font-bold text-gray-800">Critical / Deadline</div>
+                <div class="text-gray-400 text-xs mt-0.5">Urgent alerts for important tasks</div>
+              </div>
+            </div>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm font-semibold text-gray-700 block mb-2">Notification Sound</label>
+                <select class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 focus:outline-none cursor-pointer">
+                  <option>🔔 Urgent Alert</option>
+                  <option>📣 Alarm Bell</option>
+                  <option>⚠️ Critical Buzz</option>
+                  <option>🚨 Emergency Tone</option>
+                </select>
+              </div>
+              <div class="flex items-center justify-between py-2">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Vibration</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Strong haptic feedback</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-red-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-semibold text-gray-700">Volume</span>
+                  <span class="text-sm font-semibold text-red-500" id="vol-crit-val">80%</span>
+                </div>
+                <input type="range" min="0" max="100" value="80" class="w-full h-2 rounded-full" style="accent-color:#f04438" oninput="document.getElementById('vol-crit-val').textContent=this.value+'%'">
+              </div>
+              <div class="flex items-center justify-between py-2">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Push Notifications</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Always notify for deadlines</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-red-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medium Priority -->
+          <div class="bg-white rounded-2xl shadow-sm p-6 fade-up-2 border border-orange-50">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              </div>
+              <div>
+                <div class="font-bold text-gray-800">Medium Priority</div>
+                <div class="text-gray-400 text-xs mt-0.5">Standard reminders</div>
+              </div>
+            </div>
+            <div class="space-y-5">
+              <div>
+                <label class="text-sm font-semibold text-gray-700 block mb-2">Notification Sound</label>
+                <select class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 focus:outline-none cursor-pointer">
+                  <option>🔔 Default Chime</option>
+                  <option>🎵 Subtle Ping</option>
+                  <option>📬 Notification Pop</option>
+                </select>
+              </div>
+              <div class="flex items-center justify-between py-2">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Vibration</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Medium haptic feedback</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-orange-400 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-semibold text-gray-700">Volume</span>
+                  <span class="text-sm font-semibold text-orange-400" id="vol-med-val">65%</span>
+                </div>
+                <input type="range" min="0" max="100" value="65" class="w-full h-2 rounded-full" style="accent-color:#f79009" oninput="document.getElementById('vol-med-val').textContent=this.value+'%'">
+              </div>
+            </div>
+          </div>
+
+          <!-- General Settings -->
+          <div class="bg-white rounded-2xl shadow-sm p-6 fade-up-3">
+            <h3 class="font-bold text-gray-800 mb-5">General Preferences</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Daily Summary</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Receive daily task digest</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+              <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Weekend Notifications</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Get reminded on weekends</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+              <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                <div>
+                  <div class="text-sm font-semibold text-gray-700">Completion Sounds</div>
+                  <div class="text-xs text-gray-400 mt-0.5">Play sound when task done</div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer">
+                  <div class="toggle-track w-12 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow"></div>
+                </label>
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-gray-700 block mb-2">Quiet Hours</label>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <span class="text-xs text-gray-400 block mb-1">From</span>
+                    <input type="time" value="22:00" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 focus:outline-none cursor-pointer">
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 block mb-1">To</span>
+                    <input type="time" value="07:00" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 focus:outline-none cursor-pointer">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-nav fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-3 z-30 justify-around items-center" style="box-shadow:0 -4px 20px rgba(0,0,0,0.06);">
+    <button onclick="navigate('home')" class="flex flex-col items-center gap-1 nav-mobile" data-page="home">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-colors" id="mob-home-bg">
+        <svg class="w-5 h-5" id="mob-home-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <span class="text-xs font-semibold" id="mob-home-label">Home</span>
+    </button>
+    <button onclick="navigate('tasks')" class="flex flex-col items-center gap-1 nav-mobile" data-page="tasks">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-colors" id="mob-tasks-bg">
+        <svg class="w-5 h-5" id="mob-tasks-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <span class="text-xs font-medium text-gray-400" id="mob-tasks-label">Tasks</span>
+    </button>
+    <button onclick="navigate('settings')" class="flex flex-col items-center gap-1 nav-mobile" data-page="settings">
+      <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-colors" id="mob-settings-bg">
+        <svg class="w-5 h-5" id="mob-settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <span class="text-xs font-medium text-gray-400" id="mob-settings-label">Settings</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ADD TASK MODAL -->
+<div id="modal" class="modal-overlay fixed inset-0 bg-black/40 backdrop-blur-sm items-center justify-center z-50 p-4">
+  <div class="modal-box bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold text-gray-800">Add New Task</h3>
+      <button onclick="closeModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm font-semibold text-gray-600 block mb-2">Task Title *</label>
+        <input id="task-input" type="text" placeholder="What needs to be done?" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-300 transition-all" style="--tw-ring-color:#3b6cf7;">
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-gray-600 block mb-2">Priority</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="selectPriority('high')" id="btn-high" class="priority-btn selected py-3 rounded-xl text-sm font-semibold border-2 border-red-200 bg-red-50 text-red-500">🔴 High</button>
+          <button onclick="selectPriority('medium')" id="btn-medium" class="priority-btn py-3 rounded-xl text-sm font-semibold border-2 border-orange-200 bg-orange-50 text-orange-500 opacity-50">🟠 Medium</button>
+          <button onclick="selectPriority('low')" id="btn-low" class="priority-btn py-3 rounded-xl text-sm font-semibold border-2 border-blue-200 bg-blue-50 text-blue-500 opacity-50">🔵 Low</button>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-gray-600 block mb-2">Due (optional)</label>
+        <input id="due-input" type="text" placeholder="e.g. Tomorrow, 9 AM" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 placeholder-gray-300 transition-all" style="--tw-ring-color:#3b6cf7;">
+      </div>
+
+      <button onclick="addTask()" class="w-full text-white font-semibold py-3.5 rounded-2xl transition-all active:scale-95 hover:opacity-90 mt-2" style="background:linear-gradient(135deg,#3b6cf7,#2a56e0); box-shadow:0 4px 14px rgba(59,108,247,0.35)">
+        Add Task
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
